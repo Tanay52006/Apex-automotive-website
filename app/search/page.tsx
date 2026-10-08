@@ -1,0 +1,7 @@
+'use client'
+import Link from 'next/link'
+import { Search } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { cars, formatPrice } from '@/lib/cars'
+import { SiteFooter, SiteHeader } from '@/components/site-shell'
+export default function SearchPage(){const [q,setQ]=useState('');const results=useMemo(()=>cars.filter(c=>`${c.name} ${c.type} ${c.fuel}`.toLowerCase().includes(q.toLowerCase())),[q]);return <main className="min-h-screen bg-[#080808] text-white"><SiteHeader/><div className="mx-auto max-w-[1100px] px-6 pb-20 pt-32"><p className="text-[10px] uppercase tracking-[.3em] text-white/40">APEX search</p><h1 className="mt-4 text-6xl font-light">Find your <span className="text-white/35">next drive.</span></h1><div className="mt-10 flex border-b border-white/20 py-4"><Search className="mr-4 size-5 text-white/40"/><input autoFocus value={q} onChange={e=>setQ(e.target.value)} className="w-full bg-transparent text-xl outline-none" placeholder="Search model, SUV, electric, performance..."/></div><div className="mt-10 grid gap-3">{results.map(c=><Link href={`/cars/${c.id}`} key={c.id} className="flex items-center justify-between border border-white/10 p-5 hover:border-white/40"><div><p className="text-2xl font-light">APEX {c.name}</p><p className="mt-1 text-xs text-white/40">{c.type} · {c.fuel}</p></div><span className="text-sm text-white/50">{formatPrice(c.price)} →</span></Link>)}</div></div><SiteFooter/></main>}

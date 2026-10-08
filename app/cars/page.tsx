@@ -1,0 +1,17 @@
+'use client'
+import Link from 'next/link'
+import { Heart, SlidersHorizontal } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { cars, formatPrice } from '@/lib/cars'
+import { SiteFooter, SiteHeader } from '@/components/site-shell'
+
+export default function CarsPage(){
+ const [filter,setFilter]=useState('All models')
+ const [sort,setSort]=useState('featured')
+ const filtered=useMemo(()=>{let list=[...cars]; if(filter==='Electric')list=list.filter(c=>c.fuel==='Electric'); if(filter==='SUV')list=list.filter(c=>c.type.includes('SUV')); if(filter==='Performance')list=list.filter(c=>c.type.includes('Performance')||c.type.includes('Sports')); if(sort==='price')list.sort((a,b)=>a.price-b.price); if(sort==='power')list.sort((a,b)=>b.power-a.power); return list},[filter,sort])
+ return <main className="min-h-screen bg-[#080808] text-white"><SiteHeader/><div className="mx-auto max-w-[1440px] px-6 pb-20 pt-32 lg:px-10">
+ <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between"><div><p className="mb-4 text-[10px] uppercase tracking-[.3em] text-white/40">The collection</p><h1 className="text-6xl font-light tracking-[-.06em] md:text-8xl">Find your <span className="text-white/35">APEX.</span></h1></div><Link href="/" className="text-[10px] uppercase tracking-[.2em] text-white/50">Back home</Link></div>
+ <div className="mb-8 flex flex-wrap items-center gap-3 border-y border-white/10 py-5"><span className="flex items-center gap-2 border border-white/20 px-4 py-3 text-[10px] uppercase tracking-[.2em]"><SlidersHorizontal className="size-4"/> Filters</span>{['All models','Electric','SUV','Performance'].map(x=><button key={x} onClick={()=>setFilter(x)} className={`border px-4 py-3 text-[10px] uppercase tracking-[.2em] ${filter===x?'border-white bg-white text-black':'border-white/10 text-white/55 hover:border-white/50'}`}>{x}</button>)}<select value={sort} onChange={e=>setSort(e.target.value)} className="ml-auto border border-white/15 bg-[#080808] px-4 py-3 text-[10px] uppercase tracking-[.2em] text-white/70"><option value="featured">Featured</option><option value="price">Price: low to high</option><option value="power">Power: high to low</option></select></div>
+ <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">{filtered.map(car=><article key={car.id} className="group border border-white/10 bg-[#101010]"><div className="relative aspect-[1.35] overflow-hidden"><Link href={`/cars/${car.id}`}><img src={car.hero} alt={`APEX ${car.name}`} className="h-full w-full object-cover transition duration-700 group-hover:scale-105"/></Link><Link href={`/wishlist?add=${car.id}`} aria-label={`Save ${car.name}`} className="absolute right-4 top-4 rounded-full border border-white/20 bg-black/50 p-3"><Heart className="size-4"/></Link></div><div className="p-6"><p className="text-[10px] uppercase tracking-[.2em] text-white/40">{car.type}</p><h2 className="mt-2 text-3xl font-light">APEX {car.name}</h2><p className="mt-2 text-sm text-white/60">From {formatPrice(car.price)}</p><div className="my-6 grid grid-cols-3 border-y border-white/10 py-4 text-xs text-white/55"><span>{car.power} HP</span><span>{car.acceleration}</span><span>{car.range} KM</span></div><div className="flex justify-between"><Link href={`/cars/${car.id}`} className="text-[10px] uppercase tracking-[.2em]">Explore →</Link><Link href={`/configure/${car.id}`} className="text-[10px] uppercase tracking-[.2em] text-white/50">Configure →</Link></div></div></article>)}</div>
+ </div><SiteFooter/></main>
+}
